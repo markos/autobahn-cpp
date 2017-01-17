@@ -1,0 +1,8 @@
+autobahn-cpp for Debian
+----------------------
+
+The package has been patched to build with OpenSSL 1.1.x, the patch has been filed upstream:
+
+https://github.com/crossbario/autobahn-cpp/pull/148
+
+ -- Konstantinos Margaritis <markos@debian.org>  Mon 16 Jan 2017 10:58:50 +0200

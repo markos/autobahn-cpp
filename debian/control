@@ -1,0 +1,49 @@
+Source: autobahn-cpp
+Priority: optional
+Maintainer: Konstantinos Margaritis <markos@debian.org>
+Build-Depends: debhelper (>= 10), cmake, libmsgpack-dev, libwebsocketpp-dev, libboost-program-options-dev, libboost-thread-dev, libboost-system-dev, libboost-random-dev, libssl-dev
+Standards-Version: 3.9.8
+Section: libs
+Homepage: http://autobahn.ws
+#Vcs-Git: https://anonscm.debian.org/collab-maint/autobahn-cpp.git
+#Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/autobahn-cpp.git
+
+Package: autobahn-cpp-dev
+Section: libdevel
+Architecture: all
+Depends: ${misc:Depends}
+Description: WAMP in C++ for Boost/Asio - development headers
+ Autobahn|Cpp is a subproject of Autobahn which provides a C++ WAMP
+ implementation that is able to talk WAMP over stdio pipes.
+ .
+  * Caller
+  * Callee
+  * Publisher
+  * Subscriber
+ .
+ Autobahn|Cpp is open-source, licensed under the Boost Software License.
+ The API and implementation make use of modern C++ 11 and new asynchronous
+ idioms using (upcoming) features of the standard C++ library, in
+ particular Futures, Continuations and Lambdas.
+ .
+ This package includes the header files
+
+Package: autobahn-cpp-doc
+Section: doc
+Architecture: all
+Depends: ${misc:Depends}, ${shlibs:Depends}, autobahn-cpp-dev
+Description: WAMP in C++ for Boost/Asio - examples
+ Autobahn|Cpp is a subproject of Autobahn which provides a C++ WAMP
+ implementation that is able to talk WAMP over stdio pipes.
+ .
+  * Caller
+  * Callee
+  * Publisher
+  * Subscriber
+ .
+ Autobahn|Cpp is open-source, licensed under the Boost Software License.
+ The API and implementation make use of modern C++ 11 and new asynchronous
+ idioms using (upcoming) features of the standard C++ library, in
+ particular Futures, Continuations and Lambdas.
+ .
+ This package includes the examples
