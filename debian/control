@@ -1,7 +1,7 @@
 Source: autobahn-cpp
 Priority: optional
 Maintainer: Konstantinos Margaritis <markos@debian.org>
-Build-Depends: debhelper (>= 10), cmake, libmsgpack-dev, libwebsocketpp-dev, libboost-program-options-dev, libboost-thread-dev, libboost-system-dev, libboost-random-dev, libssl-dev
+Build-Depends: debhelper (>= 10), cmake, libmsgpack-dev (>= 1.4.2), libwebsocketpp-dev (>= 0.7), libboost-program-options-dev, libboost-thread-dev, libboost-system-dev, libboost-random-dev, libssl-dev
 Standards-Version: 3.9.8
 Section: libs
 Homepage: http://autobahn.ws
@@ -11,7 +11,7 @@ Homepage: http://autobahn.ws
 Package: autobahn-cpp-dev
 Section: libdevel
 Architecture: all
-Depends: ${misc:Depends}
+Depends: ${misc:Depends}, cmake, libmsgpack-dev (>= 1.4.2), libwebsocketpp-dev (>= 0.7), libboost-program-options-dev, libboost-thread-dev, libboost-system-dev, libboost-random-dev, libssl-dev
 Description: WAMP in C++ for Boost/Asio - development headers
  Autobahn|Cpp is a subproject of Autobahn which provides a C++ WAMP
  implementation that is able to talk WAMP over stdio pipes.
