@@ -1,34 +1,39 @@
-# **Autobahn**|Cpp
+# AutobahnC++
 
-> This documentation is quite outdated (and also woefully incomplete). When in doubt ask on the [mailing list](https://groups.google.com/forum/#!forum/autobahnws) or read the code!
+WAMP for C++ on Boost/ASIO.
 
-**Autobahn**|Cpp is a subproject of [Autobahn](http://autobahn.ws/) which provides a C++ [WAMP](http://wamp.ws/) implementation that is able to talk WAMP over `stdio` pipes.
+[![Docker Hub](https://img.shields.io/badge/docker-ready-blue.svg)](https://hub.docker.com/r/crossbario/autobahn-cpp/) [![Docker Hub](https://img.shields.io/badge/Docs-latest-ff69b4.svg)](https://crossbario.github.io/autobahn-cpp-docs/)
+
+---
+
+AutobahnC++ is a subproject of [Autobahn](http://autobahn.ws/) which provides a C++ [WAMP](http://wamp.ws/) implementation that is able to talk WAMP over `stdio` pipes.
 
  * **Caller**
  * **Callee**
  * **Publisher**
  * **Subscriber**
 
-**Autobahn**|Cpp is open-source, licensed under the [Boost Software License](LICENSE).
+AutobahnC++ is open-source, licensed under the [Boost Software License](LICENSE).
 
 The API and implementation make use of modern C++ 11 and new asynchronous idioms using (upcoming) features of the standard C++ library, in particular **Futures**, [**Continuations**](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3634.pdf) and **Lambdas**.
 
 > [Continuations](http://en.wikipedia.org/wiki/Continuation) are *one* way of managing control flow in an asynchronous program. Other styles include: asynchronous [Callbacks](http://en.wikipedia.org/wiki/Callback_%28computer_programming%29), [Coroutines](http://en.wikipedia.org/wiki/Coroutine) (`yield` or `await`), Actors ([Erlang/OTP](http://www.erlang.org/), [Scala](http://www.scala-lang.org/)/[Akka](http://akka.io/) or [Rust](http://www.scala-lang.org/)) and [Transactional memory](http://en.wikipedia.org/wiki/Transactional_Synchronization_Extensions).
 >
 
-**Autobahn**|Cpp supports running WAMP (`rawsocket-msgpack`) over **TCP(-TLS)**, **Unix domain sockets** or **pipes** (`stdio`). The library is "header-only", light-weight (< 2k code lines) and **depends on** the following:
+AutobahnC++ supports running WAMP (`rawsocket-msgpack`) over **TCP(-TLS)**, **Unix domain sockets** or **pipes** (`stdio`). The library is "header-only", light-weight (< 2k code lines) and **depends on** the following:
 
  * C++11 compiler
- * [`boost::future`](http://www.boost.org/doc/libs/1_56_0/doc/html/thread/synchronization.html#thread.synchronization.futures)
- * [`boost::asio`](http://www.boost.org/doc/libs/1_56_0/doc/html/boost_asio.html)
- * [msgpack-c](https://github.com/msgpack/msgpack-c)
+ * [`boost::future`](http://www.boost.org/doc/libs/1_63_0/doc/html/thread/synchronization.html#thread.synchronization.futures)
+ * [`boost::asio`](http://www.boost.org/doc/libs/1_63_0/doc/html/boost_asio.html)
+ * [`msgpack-c`](https://github.com/msgpack/msgpack-c)
+ * [`WebSocket++`](https://github.com/zaphoyd/websocketpp)
 
 For getting help, questions or feedback, get in touch on the **[mailing list](https://groups.google.com/forum/#!forum/autobahnws)**, **[Twitter](https://twitter.com/autobahnws)** or **IRC `#autobahn`** (Freenode).
 
 
 ## Show me some code!
 
-Here is how programming with C++ and **Autobahn**|Cpp looks like.
+Here is how programming with C++ and AutobahnC++ looks like.
 
 **Calling a remote Procedure**
 
@@ -88,7 +93,7 @@ Here is JavaScript running in Chrome call into C++ running on command line. Both
 ![](doc/_static/cpp_from_js.png)
 
 * [Example C++ code](https://github.com/crossbario/autobahn-cpp/blob/master/examples/register2.cpp)
-* [Example JavaScript code](https://github.com/crossbario/autobahn-cpp/blob/master/examples/index.html)
+* [Example JavaScript code](https://github.com/crossbario/autobahn-cpp/blob/master/examples/web/index.html)
 
 
 ## Examples
@@ -143,31 +148,32 @@ update-alternatives: /usr/bin/clang++ wird verwendet, um /usr/bin/c++ (c++) im m
 
 ### Boost
 
-Most of the time, your distro's Boost libraries will be outdated (unless you're using Arch or Homebrew). Don't waste time with those: to build the latest Boost 1.60 (current release as of 2016/01) from sources
+Most of the time, your distro's Boost libraries will be outdated (unless you're using Arch or Homebrew). Don't waste time with those: to build the latest Boost 1.63 (current release as of 2016/12) from sources.
 
+Get Boost 1.63:
 ```console
 cd ~
-wget http://downloads.sourceforge.net/project/boost/boost/1.60.0/boost_1_60_0.tar.bz2
-tar xvjf boost_1_60_0.tar.bz2
-cd boost_1_60_0
+wget https://sourceforge.net/projects/boost/files/boost/1.63.0/boost_1_63_0.tar.bz2
+tar xvjf boost_1_63_0.tar.bz2
+cd boost_1_63_0
+```
+To build using Clang:
+```console
 ./bootstrap.sh --with-toolset=clang
 ./b2 toolset=clang cxxflags="-stdlib=libc++" linkflags="-stdlib=libc++" -j 4
 ```
-
-> Note: The `-j 4` option will allow use of 4 cores for building.
->
-
-To build using GCC instead of Clang:
-
+To build using GCC:
 ```console
 ./bootstrap.sh --with-toolset=gcc
-./b2 toolset=gcc -j 4
+./b2 toolset=gcc -j 4 install --prefix=/usr/local
 ```
 
-Then add the following to your `~/.profile`:
+> Note: The `-j 4` option will allow use of 4 cores for building.
+
+Then add the following to your `~/.profile` or `~/.bashrc`:
 
 ```shell
-export BOOST_ROOT=${HOME}/boost_1_60_0
+export BOOST_ROOT=${HOME}/boost_1_63_0
 export LD_LIBRARY_PATH=${BOOST_ROOT}/stage/lib:${LD_LIBRARY_PATH}
 ```
 
@@ -179,37 +185,44 @@ Get [MsgPack-C](https://github.com/msgpack/msgpack-c) and install:
 cd ~
 git clone https://github.com/msgpack/msgpack-c.git
 cd msgpack-c
-git checkout cpp-1.4.0
-export CC=/usr/bin/clang
-export CXX=/usr/bin/clang++
-export CXXFLAGS="$CXXFLAGS -std=c++11"
-./bootstrap
-./configure --prefix=$HOME/msgpack_clang
+git checkout cpp-1.4.2
+cmake -DMSGPACK_CXX11=ON .
+make install
+```
+> On FreeBSD, you need to `pkg install autotools` and invoke `gmake` instead of `make`.
+
+### WebSocket++
+
+Get [WebSocket++](https://github.com/zaphoyd/websocketpp) and install:
+
+```console
+cd ~
+git clone https://github.com/zaphoyd/websocketpp.git
+cd websocketpp
+cmake .
 make install
 ```
 
-> On FreeBSD, you need to `pkg install autotools` and invoke `gmake` instead of `make`.
+### AutobahnC++
 
-Then add the following to your `~/.profile`:
-
-```shell
-export MSGPACK_ROOT=${HOME}/msgpack_clang
-export LD_LIBRARY_PATH=${MSGPACK_ROOT}/lib:${LD_LIBRARY_PATH}
-```
-
-### **Autobahn**|Cpp
-
-To get **Autobahn**|Cpp library and examples, clone the repo
+To get AutobahnC++ library and examples, clone the repo
 
 ```console
-cd $HOME
+cd ~
 git clone https://github.com/crossbario/autobahn-cpp.git
-cd autobahn
+cd autobahn-cpp
+cp -r autobahn/ /usr/local/include/
 ```
 
 The library is "header-only", means there isn't anything to compile or build. Just include the relevant headers.
 
+## Examples
 
+```console
+apt-get install scons
+cd $HOME/autobahn-cpp/examples
+scons
+```
 ## Documentation
 
 [Click here](http://autobahn.ws/cpp/reference/) for the Autobahn|Cpp reference documentation.
@@ -241,3 +254,4 @@ Get in touch on IRC `#autobahn` on `chat.freenode.net`, follow us on [Twitter](h
 * `[=, &foo]` Capture any referenced variable by making a copy, but capture variable `foo` by reference
 * `[bar]` Capture `bar` by making a copy; don't copy anything else
 * `[this]` Capture the this pointer of the enclosing class
+

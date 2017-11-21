@@ -36,6 +36,7 @@
 #include "wamp_event_handler.hpp"
 #include "wamp_message.hpp"
 #include "wamp_procedure.hpp"
+#include "wamp_publish_options.hpp"
 #include "wamp_subscribe_options.hpp"
 #include "wamp_transport_handler.hpp"
 #include "boost_config.hpp"
@@ -74,6 +75,14 @@ class wamp_unregister_request;
 class wamp_unsubscribe_request;
 class wamp_authenticate;
 class wamp_challenge;
+
+/** \defgroup PUB Publishing events
+    \brief Publishing events is done from a session using one of the following functions
+
+When a WAMP session has been established, the session can be used to publish
+event at the router, which in turn will dispatch the event to all eligible and
+authorized subscribes to the topic.
+ */
 
 /// Representation of a WAMP session.
 class wamp_session :
@@ -131,14 +140,18 @@ public:
             const std::string& reason = std::string("wamp.error.close_realm"));
 
     /*!
+     * \ingroup PUB
      * Publish an event with empty payload to a topic.
+     *
      *
      * \param topic The URI of the topic to publish to.
      * \return A future that resolves once the the topic has been published to.
      */
-    boost::future<void> publish(const std::string& topic);
+    boost::future<void> publish(const std::string& topic,
+                                const wamp_publish_options& options = wamp_publish_options());
 
     /*!
+     * \ingroup PUB
      * Publish an event with positional payload to a topic.
      *
      * \param topic The URI of the topic to publish to.
@@ -146,9 +159,11 @@ public:
      * \return A future that resolves once the the topic has been published to.
      */
     template <typename List>
-    boost::future<void> publish(const std::string& topic, const List& arguments);
+    boost::future<void> publish(const std::string& topic, const List& arguments,
+                                const wamp_publish_options& options = wamp_publish_options());
 
     /*!
+     * \ingroup PUB
      * Publish an event with both positional and keyword payload to a topic.
      *
      * \param topic The URI of the topic to publish to.
@@ -160,7 +175,8 @@ public:
     boost::future<void> publish(
             const std::string& topic,
             const List& arguments,
-            const Map& kw_arguments);
+            const Map& kw_arguments,
+            const wamp_publish_options& options = wamp_publish_options());
 
     /*!
      * Subscribe a handler to a topic to receive events.
@@ -255,7 +271,7 @@ public:
     virtual boost::future<wamp_authenticate> on_challenge(const wamp_challenge& challenge);
 
     /*!
-    * Accessor method to WELCOME DETAILS dictionary containing router roles 
+    * Accessor method to WELCOME DETAILS dictionary containing router roles
     * and corresponding features, authid, authrole, ...)
     *
     *

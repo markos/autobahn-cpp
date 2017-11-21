@@ -228,14 +228,14 @@ inline boost::future<std::string> wamp_session::leave(const std::string& reason)
     return m_session_leave.get_future();
 }
 
-inline boost::future<void> wamp_session::publish(const std::string& topic)
+inline boost::future<void> wamp_session::publish(const std::string& topic,const wamp_publish_options& options)
 {
     uint64_t request_id = ++m_request_id;
 
     auto message = std::make_shared<wamp_message>(4);
     message->set_field(0, static_cast<int>(message_type::PUBLISH));
     message->set_field(1, request_id);
-    message->set_field(2, std::unordered_map<int, int>() /* No Options */);
+    message->set_field(2, options);
     message->set_field(3, topic);
 
     auto result = std::make_shared<boost::promise<void>>();
@@ -259,14 +259,14 @@ inline boost::future<void> wamp_session::publish(const std::string& topic)
 }
 
 template <typename List>
-inline boost::future<void> wamp_session::publish(const std::string& topic, const List& arguments)
+inline boost::future<void> wamp_session::publish(const std::string& topic, const List& arguments,const wamp_publish_options& options)
 {
     uint64_t request_id = ++m_request_id;
 
     auto message = std::make_shared<wamp_message>(5);
     message->set_field(0, static_cast<int>(message_type::PUBLISH));
     message->set_field(1, request_id);
-    message->set_field(2, std::unordered_map<int, int>() /* No Options */);
+    message->set_field(2, options);
     message->set_field(3, topic);
     message->set_field(4, arguments);
 
@@ -292,14 +292,14 @@ inline boost::future<void> wamp_session::publish(const std::string& topic, const
 
 template <typename List, typename Map>
 inline boost::future<void> wamp_session::publish(
-        const std::string& topic, const List& arguments, const Map& kw_arguments)
+        const std::string& topic, const List& arguments, const Map& kw_arguments,const wamp_publish_options& options)
 {
     uint64_t request_id = ++m_request_id;
 
     auto message = std::make_shared<wamp_message>(6);
     message->set_field(0, static_cast<int>(message_type::PUBLISH));
     message->set_field(1, request_id);
-    message->set_field(2, std::unordered_map<int, int>() /* No Options */);
+    message->set_field(2, options);
     message->set_field(3, topic);
     message->set_field(4, arguments);
     message->set_field(5, kw_arguments);
@@ -675,7 +675,7 @@ inline void wamp_session::on_message(wamp_message&& message)
         case message_type::UNREGISTER:
             throw protocol_error("received UNREGISTER message unexpected for WAMP client roles");
         case message_type::UNREGISTERED:
-            // FIXME
+            process_unregistered(std::move(message));
             break;
         case message_type::INVOCATION:
             process_invocation(std::move(message));
@@ -1320,9 +1320,13 @@ inline void wamp_session::send_message(wamp_message&& message, bool session_esta
         throw protocol_error("session not running");
     }
 
-    if (!m_transport) {
+	if (!m_transport) {
         throw no_transport_error();
     }
+
+	if (!m_transport->is_connected()) {
+		throw no_transport_error();
+	}
 
     if (session_established && !m_session_id) {
         throw no_session_error();
